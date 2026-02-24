@@ -11,6 +11,8 @@ struct TimerEditView: View {
     
     private let presets = [10, 15, 25, 30, 45]
     
+    @State private var navigateToRun = false
+    
     @State private var selectedMinutes: Int = 5
     var body: some View {
         VStack(spacing: 40){
@@ -45,20 +47,19 @@ struct TimerEditView: View {
             }
             .frame(maxWidth: .infinity, alignment: .center)
             
-            NavigationLink{
-                TimerView(totalSeconds: selectedMinutes * 60)
-            } label: {
-                Text("Start")
-                    .frame(maxWidth: .infinity)
+            NavigationLink(destination: TimerView(minutes: selectedMinutes)){
+                Text("Start Timer")
+                    .font(.title)
                     .padding()
                     .background(Color.blue)
-                    .foregroundStyle(.white)
+                    .foregroundColor(.white)
                     .cornerRadius(10)
             }
-            .padding(.top, 20)
         }
         .padding()
+        
     }
+    
 }
 
 #Preview {

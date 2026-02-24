@@ -8,19 +8,13 @@
 import SwiftUI
 
 struct TimerView: View {
-    let totalSeconds: Int
+    
+    let minutes: Int
     
     @Environment(\.dismiss) private var dismiss
     
-    @State private var remainingSeconds: Int
-    @State private var endDate: Date
+    @State private var remainingSeconds: Int = 0
     @State private var timer: Timer?
-    
-    init(totalSeconds: Int) {
-        self.totalSeconds = totalSeconds
-        _endDate = State(initialValue: Date().addingTimeInterval(TimeInterval(totalSeconds)))
-        _remainingSeconds = State(initialValue: totalSeconds)
-    }
     
     var body: some View {
         ZStack{
@@ -32,7 +26,6 @@ struct TimerView: View {
                 Text("Time Left")
                     .font(.title)
                     .fontWeight(.bold)
-                
                 
                 Text(timeString(from: remainingSeconds))
                     .font(.system(size: 60, weight: .bold))
@@ -50,7 +43,7 @@ struct TimerView: View {
                 startTimer()
             }
             .onDisappear {
-                stopTimer()
+                timer?.invalidate()
             }
             
         }
@@ -58,13 +51,13 @@ struct TimerView: View {
     }
     
     func startTimer() {
+        let seconds = minutes * 60
+        TimerManager.shared.start(seconds: seconds)
+        
+        updateRemainingTIme()
+        
         timer = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true) { _ in
-            if remainingSeconds > 0{
-                remainingSeconds -= 1
-            }
-            else {
-                stopTimer()
-            }
+            updateRemainingTIme()
         }
     }
     func stopTimer() {
@@ -83,8 +76,24 @@ struct TimerView: View {
         
         return String(format: "%02d:%02d", minutes, secs)
     }
+    
+    func updateRemainingTIme() {
+        guard let endDate = TimerManager.shared.endDate() else {
+            dismiss()
+            return
+        }
+        
+        let remaining = Int(ceil(endDate.timeIntervalSinceNow))
+        
+        if remaining > 0 {
+            remainingSeconds = remaining
+        } else {
+            remainingSeconds = 0
+            TimerManager.shared.stop()
+        }
+    }
 }
 
 #Preview {
-    TimerView(totalSeconds: 20)
+    TimerView(minutes: 5)
 }
