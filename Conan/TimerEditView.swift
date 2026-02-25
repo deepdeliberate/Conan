@@ -11,8 +11,6 @@ struct TimerEditView: View {
     
     private let presets = [10, 15, 25, 30, 45]
     
-    @State private var navigateToRun = false
-    
     @State private var selectedMinutes: Int = 5
     var body: some View {
         VStack(spacing: 40){

@@ -13,6 +13,8 @@ struct TimerView: View {
     
     @Environment(\.dismiss) private var dismiss
     
+    @State private var showCompletionAlert = false
+    @State private var completedMinutes = 0
     @State private var remainingSeconds: Int = 0
     @State private var timer: Timer?
     
@@ -23,6 +25,13 @@ struct TimerView: View {
             
             
             VStack(spacing: 30) {
+                
+                Text("Focus Session")
+                    .font(.title)
+                    .fontWeight(.semibold)
+                    .padding(.top, 20)
+                
+                Spacer()
                 Text("Time Left")
                     .font(.title)
                     .fontWeight(.bold)
@@ -38,6 +47,8 @@ struct TimerView: View {
                 .background(Color.red)
                 .foregroundStyle(Color(.white))
                 .cornerRadius(20)
+                
+                Spacer()
             }
             .onAppear(){
                 startTimer()
@@ -45,7 +56,11 @@ struct TimerView: View {
             .onDisappear {
                 timer?.invalidate()
             }
-            
+        }
+        .alert("Focus Complete", isPresented: $showCompletionAlert) {
+            Button("OK", role: .cancel) {}
+        }message: {
+            Text("Completed focus for \(completedMinutes) minutes.")
         }
         
     }
@@ -62,6 +77,7 @@ struct TimerView: View {
     }
     func stopTimer() {
         timer?.invalidate()
+        TimerManager.shared.stop()
         timer = nil
     }
     
@@ -89,7 +105,13 @@ struct TimerView: View {
             remainingSeconds = remaining
         } else {
             remainingSeconds = 0
-            TimerManager.shared.stop()
+            stopTimer()
+            
+            
+            FocusStore.shared.addSession(duration: minutes * 60)
+            
+            completedMinutes = minutes
+            showCompletionAlert = true
         }
     }
 }
