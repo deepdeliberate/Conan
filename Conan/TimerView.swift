@@ -36,8 +36,9 @@ struct TimerView: View {
                     .font(.title)
                     .fontWeight(.bold)
                 
-                Text(timeString(from: remainingSeconds))
-                    .font(.system(size: 60, weight: .bold))
+                CircularProgressView(progress: getProgress(), timeString: timeString(from: remainingSeconds))
+                    .frame(maxWidth: 250, maxHeight: 250)
+                
                 
                 Button("Stop"){
                     stopAndDismiss()
@@ -63,6 +64,13 @@ struct TimerView: View {
             Text("Completed focus for \(completedMinutes) minutes.")
         }
         
+    }
+    
+    func getProgress() -> Double {
+        let total = Double(minutes * 60)
+        let remaining = Double(remainingSeconds)
+        
+        return (remaining / total)
     }
     
     func startTimer() {
