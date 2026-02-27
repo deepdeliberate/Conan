@@ -10,6 +10,7 @@ import SwiftUI
 struct TimerView: View {
     
     let minutes: Int
+    let selectedTag: FocusTag 
     
     @Environment(\.dismiss) private var dismiss
     
@@ -32,12 +33,35 @@ struct TimerView: View {
                     .padding(.top, 20)
                 
                 Spacer()
+                
                 Text("Time Left")
                     .font(.title)
                     .fontWeight(.bold)
                 
                 CircularProgressView(progress: getProgress(), timeString: timeString(from: remainingSeconds))
                     .frame(maxWidth: 250, maxHeight: 250)
+                
+                
+                HStack(spacing: 10) {
+                    Color(hex: selectedTag.colorHex)
+                        .frame(width: 10, height: 10)
+                        .clipShape(Circle())
+                    
+                    Text(selectedTag.name)
+                        .font(.title3)
+                        .fontWeight(.semibold)
+                        .foregroundStyle(.primary)
+                }
+                .padding(.horizontal, 16)
+                .padding(.vertical, 10)
+                .background(
+                    Capsule()
+                        .fill(Color(.systemGray5))
+                )
+                .overlay(
+                    Capsule()
+                        .stroke(Color(.systemGray4), lineWidth: 2)
+                )
                 
                 
                 Button("Stop"){
@@ -59,7 +83,9 @@ struct TimerView: View {
             }
         }
         .alert("Focus Complete", isPresented: $showCompletionAlert) {
-            Button("OK", role: .cancel) {}
+            Button("OK"){
+                dismiss()
+            }
         }message: {
             Text("Completed focus for \(completedMinutes) minutes.")
         }
@@ -116,7 +142,7 @@ struct TimerView: View {
             stopTimer()
             
             
-            FocusStore.shared.addSession(duration: minutes * 60)
+            FocusStore.shared.addSession(duration: minutes * 60, tag: selectedTag.id)
             
             completedMinutes = minutes
             showCompletionAlert = true
@@ -124,6 +150,34 @@ struct TimerView: View {
     }
 }
 
+private extension Color {
+    init(hex: String) {
+        let r, g, b, a: Double
+        var hexString = hex.trimmingCharacters(in: .whitespacesAndNewlines).uppercased()
+        if hexString.hasPrefix("#") { hexString.removeFirst() }
+
+        var rgba: UInt64 = 0
+        Scanner(string: hexString).scanHexInt64(&rgba)
+
+        switch hexString.count {
+        case 6: // RRGGBB
+            r = Double((rgba & 0xFF0000) >> 16) / 255.0
+            g = Double((rgba & 0x00FF00) >> 8) / 255.0
+            b = Double(rgba & 0x0000FF) / 255.0
+            a = 1.0
+        case 8: // RRGGBBAA
+            r = Double((rgba & 0xFF000000) >> 24) / 255.0
+            g = Double((rgba & 0x00FF0000) >> 16) / 255.0
+            b = Double((rgba & 0x0000FF00) >> 8) / 255.0
+            a = Double(rgba & 0x000000FF) / 255.0
+        default:
+            r = 0; g = 0; b = 0; a = 0
+        }
+        self = Color(red: r, green: g, blue: b, opacity: a)
+    }
+}
+
 #Preview {
-    TimerView(minutes: 5)
+    let tag = FocusStore.shared.loadTags().first!
+    TimerView(minutes: 5, selectedTag: tag)
 }

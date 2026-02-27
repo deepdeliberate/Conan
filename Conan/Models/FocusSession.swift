@@ -11,4 +11,5 @@ struct FocusSession: Codable, Identifiable {
     let id: UUID
     let date: Date
     let duration: Int // in seconds
+    let tag: UUID
 }

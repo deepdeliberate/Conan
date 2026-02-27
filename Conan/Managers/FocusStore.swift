@@ -12,21 +12,60 @@ class FocusStore {
     
     private let fileURL: URL
     
+    private let tagsKey = "focus_tags.json"
+    private let tagsURL: URL
+    
     private init() {
         let documents = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
         fileURL = documents.appendingPathComponent("focus_sessions.json")
+        tagsURL = documents.appendingPathComponent(tagsKey)
         
-        print("File path: ", fileURL.path)
+        createDefaultTagsIfNeeded()
+    }
+    
+    // MARK: - Default Tags Creation Once
+    private func createDefaultTagsIfNeeded() {
+        if FileManager.default.fileExists(atPath: tagsURL.path){
+            return
+        }
+        
+        let defaults: [FocusTag] = [
+            FocusTag(id: UUID(), name: "Work", colorHex: "#007AFF" ), // Blue
+            FocusTag(id: UUID(), name: "Study", colorHex: "#34C759" ), // Green
+            FocusTag(id: UUID(), name: "Deep Focus", colorHex: "#AF52DE" )  // Purple
+        ]
+        
+        saveTags(defaults)
+    }
+    
+    // MARK: - Tags functions
+    func loadTags() -> [FocusTag] {
+        do {
+            let data = try Data(contentsOf: tagsURL)
+            return try JSONDecoder().decode([FocusTag].self, from: data)
+        }catch {
+            return []
+        }
+    }
+    
+    func saveTags(_ tags: [FocusTag]){
+        do{
+            let data = try JSONEncoder().encode(tags)
+            try data.write(to: tagsURL)
+        }catch {
+            print("Tag save error:", error)
+        }
     }
     
     // MARK: - Save Session
-    func addSession(duration: Int){
+    func addSession(duration: Int, tag: UUID){
         var sessions = loadSessions()
         
         let newSession = FocusSession(
             id: UUID(),
             date: Date(),
-            duration: duration
+            duration: duration,
+            tag: tag
         )
         
         sessions.append(newSession)

@@ -15,6 +15,7 @@ struct StatsView: View {
         List(sessions) { session in
             VStack(alignment: .leading) {
                 Text(session.date.formatted())
+                
                 Text("\(session.duration / 60) minutes")
             }
         }
