@@ -21,6 +21,10 @@ class FocusStore {
         tagsURL = documents.appendingPathComponent(tagsKey)
         
         createDefaultTagsIfNeeded()
+        
+        #if DEBUG
+        createSampleSessionsIfNeeded()
+        #endif
     }
     
     // MARK: - Default Tags Creation Once
@@ -97,5 +101,27 @@ class FocusStore {
         } catch {
             print("Save ERROR", error.localizedDescription)
         }
+    }
+    
+    // MARK: - Sample Data
+    private func generateSampleSessions() -> [FocusSession] {
+        let tags = loadTags()
+        guard let work = tags.first else {return [] }
+        
+        let sampleSessions: [FocusSession] = [
+            FocusSession(id: UUID(), date: Date().addingTimeInterval(-3600), duration: 25*60, tag: work.id),
+            FocusSession(id: UUID(), date: Date().addingTimeInterval(-7200), duration: 45*60, tag: work.id),
+            FocusSession(id: UUID(), date: Date().addingTimeInterval(-86400), duration: 30*60, tag: work.id)
+            ]
+        
+        return sampleSessions
+    }
+    
+    private func createSampleSessionsIfNeeded(){
+        if FileManager.default.fileExists(atPath: fileURL.path){
+            return
+        }
+        let samples = generateSampleSessions()
+        saveSession(samples)
     }
 }

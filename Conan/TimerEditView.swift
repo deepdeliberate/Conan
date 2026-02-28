@@ -12,7 +12,12 @@ struct TimerEditView: View {
     private let presets = [10, 15, 25, 30, 45]
     
     @State private var selectedMinutes: Int = 5
-    @State private var selectedTag: FocusTag?
+    @State private var selectedTag: FocusTag
+    
+    init() {
+        let loadedTags = FocusStore.shared.loadTags()
+        _selectedTag = State(initialValue: loadedTags.first!)
+    }
     
     var body: some View {
         VStack(spacing: 40){
@@ -49,18 +54,17 @@ struct TimerEditView: View {
             
             Picker("Tag", selection: $selectedTag){
                 ForEach(FocusStore.shared.loadTags()) { tag in
-                    Text(tag.name).tag(Optional(tag))
+                    Text(tag.name).tag(tag)
                 }
             }
-            if let selectedTag{
-                NavigationLink(destination: TimerView(minutes: selectedMinutes, selectedTag: selectedTag)){
-                    Text("Start Timer")
-                        .font(.title)
-                        .padding()
-                        .background(Color.blue)
-                        .foregroundColor(.white)
-                        .cornerRadius(10)
-                }
+            
+            NavigationLink(destination: TimerView(minutes: selectedMinutes, selectedTag: selectedTag)){
+                Text("Start Timer")
+                    .font(.title)
+                    .padding()
+                    .background(Color.blue)
+                    .foregroundColor(.white)
+                    .cornerRadius(10)
             }
         }
         .onAppear{

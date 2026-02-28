@@ -150,7 +150,7 @@ struct TimerView: View {
     }
 }
 
-private extension Color {
+extension Color {
     init(hex: String) {
         let r, g, b, a: Double
         var hexString = hex.trimmingCharacters(in: .whitespacesAndNewlines).uppercased()
