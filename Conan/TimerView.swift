@@ -9,6 +9,8 @@ import SwiftUI
 
 struct TimerView: View {
     
+    @EnvironmentObject var focus: FocusEngine
+    
     let minutes: Int
     let selectedTag: FocusTag 
     
@@ -102,6 +104,7 @@ struct TimerView: View {
     func startTimer() {
         let seconds = minutes * 60
         TimerManager.shared.start(seconds: seconds)
+        focus.start(minutes: minutes)
         
         updateRemainingTIme()
         
@@ -181,3 +184,4 @@ extension Color {
     let tag = FocusStore.shared.loadTags().first!
     TimerView(minutes: 5, selectedTag: tag)
 }
+

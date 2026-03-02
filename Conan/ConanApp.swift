@@ -9,9 +9,12 @@ import SwiftUI
 
 @main
 struct ConanApp: App {
+    @StateObject private var focus = FocusEngine()
+    
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            RootView()
+                .environmentObject(focus)
         }
     }
 }
