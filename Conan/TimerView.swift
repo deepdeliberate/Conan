@@ -106,6 +106,8 @@ struct TimerView: View {
         TimerManager.shared.start(seconds: seconds)
         focus.start(minutes: minutes)
         
+        NotificationManager.shared.schedulePomodoroNotification(minutes: minutes, sessionName: selectedTag.name)
+        
         updateRemainingTIme()
         
         timer = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true) { _ in
@@ -115,6 +117,7 @@ struct TimerView: View {
     func stopTimer() {
         timer?.invalidate()
         TimerManager.shared.stop()
+        NotificationManager.shared.cancelNotifications()
         timer = nil
     }
     

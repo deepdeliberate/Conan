@@ -24,7 +24,7 @@ struct TimerEditView: View {
             Text("Select Time")
                 .font(.largeTitle)
             
-            Stepper("\(selectedMinutes) minutes", value: $selectedMinutes, in: 1...60)
+            Stepper("\(selectedMinutes) minutes", value: $selectedMinutes, in: 1...120)
                 .font(.title2)
             
             LazyVGrid(columns: Array(repeating: GridItem(.flexible()), count: presets.count), spacing: 16)

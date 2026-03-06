@@ -19,8 +19,9 @@ struct TimerBannerView: View {
                 .font(.largeTitle)
                 .bold()
         }
-        .frame(maxWidth: .infinity)
+        .padding(10)
         .background(Color.green.opacity(0.2))
+        .clipShape(Capsule())
     }
     
     func timeString(from seconds: Int) -> String {

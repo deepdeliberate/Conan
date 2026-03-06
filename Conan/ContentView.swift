@@ -30,12 +30,14 @@ struct ContentView: View {
                     .padding()
             }
             .navigationTitle("Focus")
-            .navigationBarTitleDisplayMode(.inline)
+            .onAppear{
+                NotificationManager.shared.requestPermission()
+            }
             .toolbar{
                 ToolbarItem(placement: .principal) {
-                    Text("Focus")
-                        .font(.title)
-                        .fontWeight(.bold)
+//                    Text("Focus")
+//                        .font(.title)
+//                        .fontWeight(.bold)
                 }
                 ToolbarItem(placement: .topBarTrailing) {
                     NavigationLink(destination: StatsView()) {

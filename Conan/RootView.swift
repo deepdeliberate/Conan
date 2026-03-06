@@ -11,12 +11,12 @@ struct RootView: View {
     @EnvironmentObject var focus: FocusEngine
     
     var body: some View {
-        VStack(spacing: 0){
+        ZStack(alignment: .top){
+            
+            ContentView()
             if focus.isRunning {
                 TimerBannerView()
             }
-            
-            ContentView()
             
         }
         
